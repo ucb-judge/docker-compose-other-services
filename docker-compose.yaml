@@ -27,18 +27,14 @@ services:
       - ~/Desktop/SIS-311/ucb-judge/keycloak:/opt/keycloak/data
     networks:
       - pocketnet
-
   zipkin:
     image: openzipkin/zipkin
     ports:
       - "9411:9411"
     networks:
       - pocketnet
-
   config-server:
     image: ucb-judge-config-server:1.0.0
-    ports:
-      - "8888:8888"
     environment:
       CONFIG_SERVER_USER: ${CONFIG_SERVER_USER}
       CONFIG_SERVER_PASSWORD: ${CONFIG_SERVER_PASSWORD}
