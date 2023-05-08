@@ -6,6 +6,11 @@
 
 version: "3.7"
 
+networks:
+  pocketnet:
+    name: network-ucb-judge
+    driver: bridge
+
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:21.0.1
@@ -19,4 +24,27 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HTTP_PORT: 8090
     volumes:
-      - /Users/chrisalanapazaaguilar/Desktop/SIS-311/ucb-judge/keycloak:/opt/keycloak/data
+      - ~/Desktop/SIS-311/ucb-judge/keycloak:/opt/keycloak/data
+    networks:
+      - pocketnet
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - pocketnet
+
+  config-server:
+    image: ucb-judge-config-server:1.0.0
+    ports:
+      - "8888:8888"
+    environment:
+      CONFIG_SERVER_USER: ${CONFIG_SERVER_USER}
+      CONFIG_SERVER_PASSWORD: ${CONFIG_SERVER_PASSWORD}
+      GIT_REPO_URI: ${GIT_REPO_URI}
+      HOST_KEY: ${HOST_KEY}
+      PRIVATE_KEY_PATH: ${PRIVATE_KEY_PATH}
+      ENCRYPT_KEY: ${ENCRYPT_KEY}
+    networks:
+      - pocketnet
