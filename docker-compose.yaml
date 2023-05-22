@@ -20,8 +20,8 @@ services:
       - "8090:8090"
     environment:
       DB_VENDOR: h2
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HTTP_PORT: 8090
     volumes:
       - ~/Desktop/SIS-311/ucb-judge/keycloak:/opt/keycloak/data
@@ -34,7 +34,9 @@ services:
     networks:
       - pocketnet
   config-server:
-    image: ucb-judge-config-server:1.0.0
+    image: ucb-judge-config-server:1.0.1
+    ports:
+      - "8888:8888"
     environment:
       CONFIG_SERVER_USER: ${CONFIG_SERVER_USER}
       CONFIG_SERVER_PASSWORD: ${CONFIG_SERVER_PASSWORD}
@@ -42,5 +44,21 @@ services:
       HOST_KEY: ${HOST_KEY}
       PRIVATE_KEY_PATH: ${PRIVATE_KEY_PATH}
       ENCRYPT_KEY: ${ENCRYPT_KEY}
+    volumes:
+      - ~/Desktop/SIS-311/ucb-judge/config-server:/opt/ucb-judge/logs/uj-config-server
+    networks:
+      - pocketnet
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ~/Desktop/SIS-311/ucb-judge/minio:/data
+    command: server /data --console-address ":9090"
     networks:
       - pocketnet
