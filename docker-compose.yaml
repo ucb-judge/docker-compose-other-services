@@ -10,6 +10,8 @@ networks:
   pocketnet:
     name: network-ucb-judge
     driver: bridge
+  elk-ucb-judge:
+    external: true
 
 services:
   keycloak:
@@ -34,7 +36,7 @@ services:
     networks:
       - pocketnet
   config-server:
-    image: ucb-judge-config-server:1.0.1
+    image: ucb-judge-config-server:1.0.2
     ports:
       - "8888:8888"
     environment:
@@ -44,10 +46,12 @@ services:
       HOST_KEY: ${HOST_KEY}
       PRIVATE_KEY_PATH: ${PRIVATE_KEY_PATH}
       ENCRYPT_KEY: ${ENCRYPT_KEY}
+      LOGSTASH_SERVER_URI: ${LOGSTASH_SERVER_URI}
     volumes:
       - ~/Desktop/SIS-311/ucb-judge/config-server:/opt/ucb-judge/logs/uj-config-server
     networks:
       - pocketnet
+      - elk-ucb-judge
 
   minio:
     image: minio/minio
