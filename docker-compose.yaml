@@ -15,6 +15,7 @@ networks:
 
 services:
   keycloak:
+    container_name: uj-keycloak
     image: quay.io/keycloak/keycloak:21.0.1
     command: start-dev
     restart: always
@@ -29,13 +30,17 @@ services:
       - ~/Desktop/SIS-311/ucb-judge/keycloak:/opt/keycloak/data
     networks:
       - pocketnet
+
   zipkin:
+    container_name: uj-zipkin
     image: openzipkin/zipkin
     ports:
       - "9411:9411"
     networks:
       - pocketnet
+
   config-server:
+    container_name: uj-config-server
     image: ucb-judge-config-server:1.0.2
     ports:
       - "8888:8888"
@@ -54,6 +59,7 @@ services:
       - elk-ucb-judge
 
   minio:
+    container_name: uj-minio
     image: minio/minio
     ports:
       - "9000:9000"
@@ -64,5 +70,20 @@ services:
     volumes:
       - ~/Desktop/SIS-311/ucb-judge/minio:/data
     command: server /data --console-address ":9090"
+    networks:
+      - pocketnet
+
+  rabbitmq:
+    container_name: uj-rabbitmq
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USERNAME}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    volumes:
+      - ~/Desktop/SIS-311/ucb-judge/rabbitmq:/var/lib/rabbitmq
+      - ~/Desktop/SIS-311/ucb-judge/rabbitmq/log:/var/log/rabbitmq
     networks:
       - pocketnet
